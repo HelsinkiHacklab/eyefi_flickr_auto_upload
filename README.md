@@ -13,6 +13,7 @@ Upload photos to Flickr albums using X2 Eye-Fi card and Raspberry Pi 3.
  * eyefiserver2 by dgrant: https://github.com/dgrant/eyefiserver2
  * flickraw: https://github.com/hanklords/flickraw
  * exifr: https://github.com/remvee/exifr
+ * Lockfile https://rubygems.org/gems/lockfile
  * Raspberry Pi 3
 
 ## Step-by-step, how to use:
@@ -72,6 +73,7 @@ Ruby installs
 ```
 sudo gem install flickraw
 sudo gem install exifr
+sudo gem install lockfile
 ```
 
 ###6.

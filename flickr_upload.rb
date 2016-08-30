@@ -20,6 +20,10 @@ end
 require 'flickraw'
 require 'exifr'
 require 'logger'
+require 'lockfile'
+
+# Try to make sure we upload photos only once
+Lockfile.new ('flickr_upload.lock') do
 
 # Logfile
 $mylog = Logger.new(LOG_path+'flickr_upload_log.txt', 10, 1024000)
@@ -143,9 +147,8 @@ for pic in pic_list
   # Use exif data to rename both picture and album titles
   
   # Reduce 3h from album dates, so that pics taken before 3 am. are sorted in same Flickr album with pics taken at same evening/night
-  album_date = EXIFR::JPEG.new(pic).album_date - (60 * 60 * 3)
-
-  album_name = album_date.strftime('%Y-%m-%d')
+  album_name = (EXIFR::JPEG.new(pic).date_time - (60 * 60 * 3)).strftime('%Y-%m-%d')
+  
   pic_name = EXIFR::JPEG.new(pic).date_time.strftime('%Y-%m-%d %H:%M:%S')
   
   # Upload the pic, insert to album or create a new one if not existing
@@ -153,3 +156,5 @@ for pic in pic_list
 end
 
 $mylog.info("----> End")
+
+end # Release lockfile
