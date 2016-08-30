@@ -12,12 +12,14 @@ Upload photos to Flickr albums using X2 Eye-Fi card and Raspberry Pi 3.
  * exifr: https://github.com/remvee/exifr
  * Raspberry Pi 3
 
-## How to use
+## Step-by-step, how to use:
 
 (this might be missing some steps, I try to make better instructons for Eye-Fi Center stuff later)
 
 ###1.
-These instructions require you to first configure your eye-fi card using Eye-Fi Center. Remove your card from your Eye-Fi account, but first enable its Wifi option. You will need the Wifi network name and the password. You also need its MAC number and upload key.
+These instructions require you to first configure your eye-fi card using Eye-Fi Center. Remove your card from your Eye-Fi account, but first enable its Wifi option (Direct mode network). You will need the Wifi network name and the password. You also need its MAC address and upload key.
+
+On Mac OS, you can find the MAC address in Eye-Fi xml file in your Library folder.
 
 ###2.
 Using your Raspberry Pi 3:
@@ -38,6 +40,7 @@ you need to change following:
  * upload_uid
  * upload_gid
  * upload_dir
+
 For this example, I'm using upload_dir:/home/pi/Pictures/%%Y-%%m-%%d
 upload_uid and upload_gid are both 1000
 

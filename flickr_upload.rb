@@ -2,13 +2,12 @@
 #  Automated upload to Flickr
 #   jssmk @ Helsinki Hacklab
 #
-#      arranges photos in
-#     albums by date taken
+#     arranges photos in
+#       albums by date
 #
 
 # Start with editing your locals.rb file, use locals_default.rb as a template
 require_relative 'locals'
-
 
 pic_list = Dir[PIC_path+"**/**{.JPG,.jpg}"].reject { |p| p.index(PIC_exclude_prefix) }
 
@@ -53,10 +52,19 @@ FlickRaw.shared_secret = MY_shared_secret
 flickr.access_token = MY_access_token
 flickr.access_secret = MY_access_secret
 
-login = flickr.test.login
+# Login
+
+begin
+  login = flickr.test.login
+rescue TypeError, NameError => e
+  $mylog.error("Login failed: #{e}")
+  exit
+end
 $mylog.info("You are authenticated as #{login.username}")
 
+
 # List of albums in my Flickr account
+
 $album_list = nil
 def refresh_album_list()
   $album_list = flickr.photosets.getList
@@ -70,15 +78,15 @@ def upload_pic(pic, pic_name, album_name)
   pic_basename = File.basename(pic)
   
   ## Upload
-  
+
   begin
     # try uploading the pic
     $mylog.info("Start uploading: "+pic_basename)
     
     # upload_photo returns Flickr photo id
     pic_result = flickr.upload_photo pic, :title => pic_name, :description => PIC_default_desc
-  rescue TypeError, NameError => e
-    $mylog.error("Photo upload failed: #{e}")
+  rescue FlickRaw::FailedResponse => e
+    $mylog.error("Photo upload failed: #{e.msg}")
     return
   end
   $mylog.info("Pic "+pic_basename+" uploaded")
@@ -88,11 +96,12 @@ def upload_pic(pic, pic_name, album_name)
   
   
   ## Tags
+
   begin
     # Add tags to newly uploaded photo
     flickr.photos.addTags api_key: FlickRaw.api_key, photo_id: pic_result, tags: PIC_default_tags
-  rescue TypeError, NameError => e
-    $mylog.error("Photo tagging failed: #{e}")
+  rescue FlickRaw::FailedResponse => e
+    $mylog.error("Photo tagging failed: #{e.msg}")
   end
   
   
@@ -107,30 +116,36 @@ def upload_pic(pic, pic_name, album_name)
     
     begin
       flickr.photosets.addPhoto photoset_id: dest_album.id, photo_id: pic_result
-    rescue TypeError, NameError => e
-      mylog.error("Inserting pic in album failed: #{e}")
+    rescue FlickRaw::FailedResponse => e
+      $mylog.error("Adding to album failed: #{e.msg}")
     end
     
   else
     # album does not yet exist
-    mylog.info("Creating new album: "+album_name)
+    $mylog.info("Creating new album: "+album_name)
     
     begin
       flickr.photosets.create api_key: FlickRaw.api_key, title: album_name, :primary_photo_id => pic_result
-    rescue TypeError, NameError => e
-      $mylog.error("Creating album failed: #{e}")
+    rescue FlickRaw::FailedResponse => e
+      $mylog.error("Creating album failed: #{e.msg}")
     end
     
     refresh_album_list() # we now have a new album available, refresh the list
   end
 end
 
+
 # Upload the pics so that photostream shows new photos first
 pic_list.sort! {|left, right| EXIFR::JPEG.new(left).date_time <=> EXIFR::JPEG.new(right).date_time }
 
+
 for pic in pic_list
   # Use exif data to rename both picture and album titles
-  album_name = EXIFR::JPEG.new(pic).date_time.strftime('%Y-%m-%d')
+  
+  # Reduce 3h from album dates, so that pics taken before 3 am. are sorted in same Flickr album with pics taken at same evening/night
+  album_date = EXIFR::JPEG.new(pic).album_date - (60 * 60 * 3)
+
+  album_name = album_date.strftime('%Y-%m-%d')
   pic_name = EXIFR::JPEG.new(pic).date_time.strftime('%Y-%m-%d %H:%M:%S')
   
   # Upload the pic, insert to album or create a new one if not existing
