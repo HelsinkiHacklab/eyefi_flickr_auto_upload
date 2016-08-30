@@ -1,9 +1,12 @@
 # eyefi_flickr_auto_upload
+
+_(This is more like tutorial or an example rather than a project - in fact all Eye-Fi related stuff is handled by eyefiserver2)_
+
 Upload photos to Flickr albums using X2 Eye-Fi card and Raspberry Pi 3.
 
 ## Features
  * Replacement for soon-to-be-discontinued Eye-Fi Center auto-upload
- * Gets photos from the card, uploads them to Flickr
+ * Gets photos from the card, uploads them to Flickr 
  * Sorts photos in folders in RasPi and in albums by date in Flickr using exif data
 
 ## Requirements
@@ -42,6 +45,7 @@ you need to change following:
  * upload_dir
 
 For this example, I'm using upload_dir:/home/pi/Pictures/%%Y-%%m-%%d
+
 upload_uid and upload_gid are both 1000
 
 Copy the files:
