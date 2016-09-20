@@ -23,10 +23,14 @@ require 'logger'
 require 'lockfile'
 
 # Try to make sure we upload photos only once
-Lockfile.new ('flickr_upload.lock') do
+Lockfile.new ("/tmp/flickr_upload.lock") do
+
 
 # Logfile
-$mylog = Logger.new(LOG_path+'flickr_upload_log.txt', 10, 1024000)
+
+file_for_logging = File.open(LOG_path+"flickr_upload_log.txt", File::WRONLY || File::APPEND)
+$mylog = Logger.new($file_for_logging)
+
 $mylog.info("Start ---->")
 $mylog.info("Number of new pics to upload: "+pic_list.length.to_s)
 
