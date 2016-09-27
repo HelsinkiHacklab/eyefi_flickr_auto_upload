@@ -9,11 +9,11 @@
 # Start with editing your locals.rb file, use locals_default.rb as a template
 require_relative 'locals'
 
-pic_list = Dir[PIC_path+"**/**{.JPG,.jpg,.png,.PNG}"].reject { |p| p.index(PIC_exclude_prefix) }
-
+pic_list = Dir[PIC_path+"**/**{.JPG,.jpg}"].reject { |p| p.index(PIC_exclude_prefix) }
+png_list = Dir[PIC_path+"**/**{.PNG,.png}"].reject { |p| p.index(PIC_exclude_prefix) }
 
 # if pic_list is empty, no need to do anything else, just exit
-if pic_list.empty?
+if pic_list.empty? and png_list.empty?
   exit
 end
 
@@ -157,6 +157,15 @@ for pic in pic_list
   
   # Upload the pic, insert to album or create a new one if not existing
   upload_pic(pic, pic_name, album_name)
+end
+
+
+for png in png_list
+  png_name = File.basename(png)
+  album_name = "Graphs"
+
+  # Upload the pic, insert to album or create a new one if not existing
+  upload_pic(png, png_name, album_name)
 end
 
 $mylog.info("----> End")
