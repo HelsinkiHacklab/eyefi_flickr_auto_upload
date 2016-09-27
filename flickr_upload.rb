@@ -9,7 +9,7 @@
 # Start with editing your locals.rb file, use locals_default.rb as a template
 require_relative 'locals'
 
-pic_list = Dir[PIC_path+"**/**{.JPG,.jpg}"].reject { |p| p.index(PIC_exclude_prefix) }
+pic_list = Dir[PIC_path+"**/**{.JPG,.jpg,.png,.PNG}"].reject { |p| p.index(PIC_exclude_prefix) }
 
 
 # if pic_list is empty, no need to do anything else, just exit
