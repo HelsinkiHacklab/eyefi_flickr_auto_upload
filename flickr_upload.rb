@@ -12,10 +12,19 @@ require_relative 'locals'
 pic_list = Dir[PIC_path+"**/**{.JPG,.jpg}"].reject { |p| p.index(PIC_exclude_prefix) }
 png_list = Dir[PIC_path+"**/**{.PNG,.png}"].reject { |p| p.index(PIC_exclude_prefix) }
 
+
+remove_time = Time.now()-60*60*24*300 # 300 days old pictures
+pic_remove = Dir[PIC_path+"**/**{.JPG,.jpg}"].select { |p| File.mtime(p) < remove_time }
+pic_remove.each do |p| File.delete(p) end # delete old pictures
+
+
 # if pic_list is empty, no need to do anything else, just exit
 if pic_list.empty? and png_list.empty?
   exit
 end
+
+
+
 
 require 'flickraw'
 require 'exifr'
@@ -76,6 +85,7 @@ $mylog.info("You are authenticated as #{login.username}")
 $album_list = nil
 def refresh_album_list()
   $album_list = flickr.photosets.getList
+  sleep(1) # list of albums might need some time to give fresh results from api 
 end
 refresh_album_list()
 
