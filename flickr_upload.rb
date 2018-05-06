@@ -12,12 +12,6 @@ require_relative 'locals'
 pic_list = Dir[PIC_path+"**/**{.JPG,.jpg}"].reject { |p| p.index(PIC_exclude_prefix) }
 png_list = Dir[PIC_path+"**/**{.PNG,.png}"].reject { |p| p.index(PIC_exclude_prefix) }
 
-
-remove_time = Time.now()-60*60*24*300 # 300 days old pictures
-pic_remove = Dir[PIC_path+"**/**{.JPG,.jpg}"].select { |p| File.mtime(p) < remove_time }
-pic_remove.each do |p| File.delete(p) end # delete old pictures
-
-
 # if pic_list is empty, no need to do anything else, just exit
 if pic_list.empty? and png_list.empty?
   exit
@@ -25,25 +19,35 @@ end
 
 
 
+require 'logger'
+
+# Logfile
+file_for_logging = File.open(LOG_path+"flickr_upload_log.txt", File::WRONLY || File::APPEND)
+$mylog = Logger.new($file_for_logging)
+$mylog.info("Start ---->")
+$mylog.info("Number of new pics to upload: "+pic_list.length.to_s)
+
+
+
+# Remove all pictures that are 300 days old
+remove_time = Time.now()-60*60*24*300 # 300 days from here
+pic_remove = Dir[PIC_path+"**/**{.JPG,.jpg}"].select { |p| File.mtime(p) < remove_time } # Filter by modified date
+if pic_remove.any?
+  $mylog.info("Removing "+pic_remove.count+" files")
+  pic_remove.each do |p| File.delete(p) end # delete all old pictures
+end
+
+
 
 require 'flickraw'
 require 'exifr'
-require 'logger'
 require 'lockfile'
 
 # Try to make sure we upload photos only once
 Lockfile.new ("/tmp/flickr_upload.lock") do
 
 
-# Logfile
-
-file_for_logging = File.open(LOG_path+"flickr_upload_log.txt", File::WRONLY || File::APPEND)
-$mylog = Logger.new($file_for_logging)
-
-$mylog.info("Start ---->")
-$mylog.info("Number of new pics to upload: "+pic_list.length.to_s)
-
-
+# API key
 FlickRaw.api_key = MY_api_key
 FlickRaw.shared_secret = MY_shared_secret
 
@@ -85,7 +89,6 @@ $mylog.info("You are authenticated as #{login.username}")
 $album_list = nil
 def refresh_album_list()
   $album_list = flickr.photosets.getList
-  sleep(1) # list of albums might need some time to give fresh results from api 
 end
 refresh_album_list()
 
@@ -148,6 +151,7 @@ def upload_pic(pic, pic_name, album_name)
       $mylog.error("Creating album failed: #{e.msg}")
     end
     
+    sleep(5) # It takes some time before the new album is available through API
     refresh_album_list() # we now have a new album available, refresh the list
   end
 end
