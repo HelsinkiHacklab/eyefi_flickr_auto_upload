@@ -33,7 +33,7 @@ $mylog.info("Number of new pics to upload: "+pic_list.length.to_s)
 remove_time = Time.now()-60*60*24*300 # 300 days from here
 pic_remove = Dir[PIC_path+"**/**{.JPG,.jpg}"].select { |p| File.mtime(p) < remove_time } # Filter by modified date
 if pic_remove.any?
-  $mylog.info("Removing "+pic_remove.count+" files")
+  $mylog.info("Removing "+pic_remove.count.to_s+" files")
   pic_remove.each do |p| File.delete(p) end # delete all old pictures
 end
 
