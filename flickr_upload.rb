@@ -22,6 +22,9 @@ end
 require 'logger'
 
 # Logfile
+if not File.exists?(LOG_path+"flickr_upload_log.txt")
+  File.open(LOG_path+"flickr_upload_log.txt", "w")
+end
 file_for_logging = File.open(LOG_path+"flickr_upload_log.txt", File::WRONLY || File::APPEND)
 $mylog = Logger.new($file_for_logging)
 $mylog.info("Start ---->")
@@ -41,6 +44,7 @@ end
 
 require 'flickraw'
 require 'exifr'
+require 'exifr/jpeg'
 require 'lockfile'
 
 # Try to make sure we upload photos only once

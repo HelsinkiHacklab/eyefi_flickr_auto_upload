@@ -84,9 +84,7 @@ In ~/eyefi:
 ###7.
 Add in your crontab
 ```
-@reboot sudo eyefiserver.py start /etc/eyefiserver.conf /home/pi/Documents/eyefi-log.txt
+@reboot sudo eyefiserver.py start /etc/eyefiserver2.conf /home/pi/Documents/eyefi-log.txt
 */5 * * * * ruby /home/pi/eyefi/eyefi_flickr_auto_upload/flickr_upload.rb 
 ```
 
-### TODO:
-Remove photos older than X days from Raspberry Pi to make space for new ones.
