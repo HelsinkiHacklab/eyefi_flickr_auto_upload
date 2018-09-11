@@ -6,6 +6,7 @@
 #       albums by date
 #
 
+
 # Start with editing your locals.rb file, use locals_default.rb as a template
 require_relative 'locals'
 
@@ -17,19 +18,16 @@ if pic_list.empty? and png_list.empty?
   exit
 end
 
-
-
 require 'logger'
 
 # Logfile
 if not File.exists?(LOG_path+"flickr_upload_log.txt")
-  File.open(LOG_path+"flickr_upload_log.txt", "w")
+  File.open(LOG_path+"flickr_upload_log.txt", "w") do |f| f.write "New log"  end
 end
-file_for_logging = File.open(LOG_path+"flickr_upload_log.txt", File::WRONLY || File::APPEND)
+$file_for_logging = File.open(LOG_path+"flickr_upload_log.txt", File::WRONLY || File::APPEND)
 $mylog = Logger.new($file_for_logging)
 $mylog.info("Start ---->")
 $mylog.info("Number of new pics to upload: "+pic_list.length.to_s)
-
 
 
 # Remove all pictures that are 300 days old

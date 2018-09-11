@@ -1,2 +1,5 @@
 # exclude locals file
 locals.rb
+*.swp
+*.swo
+
