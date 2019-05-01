@@ -49,6 +49,8 @@ For this example, I'm using upload_dir:/home/pi/Pictures/%%Y-%%m-%%d
 
 upload_uid and upload_gid are both 1000
 
+Edit your preferred log file path in etc/init.d/eyefiserver
+
 Copy the files:
 ```
 sudo cp etc/eyefiserver2.conf /etc
@@ -84,7 +86,7 @@ In ~/eyefi:
 ###7.
 Add in your crontab
 ```
-@reboot sudo eyefiserver.py start /etc/eyefiserver2.conf /home/pi/Documents/eyefi-log.txt
+@reboot /etc/init.d/eyefiserver start
 */5 * * * * ruby /home/pi/eyefi/eyefi_flickr_auto_upload/flickr_upload.rb 
 ```
 
