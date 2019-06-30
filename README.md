@@ -87,6 +87,7 @@ In ~/eyefi:
 Add in your crontab
 ```
 @reboot /etc/init.d/eyefiserver start
+OR @reboot /etc/init.d/eyefiserver start /etc/eyefiserver.conf /home/pi/eyefilog.txt
 */5 * * * * ruby /home/pi/eyefi/eyefi_flickr_auto_upload/flickr_upload.rb 
 ```
 
